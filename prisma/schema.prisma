@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id           Int           @id @default(autoincrement())
+  accountName  String
+  balance      Float         @default(0.0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[] // One-to-many relationship with Transaction
+}
+
+model Transaction {
+  id           Int             @id @default(autoincrement())
+  accountId    Int // Foreign key to the Account model
+  account      Account         @relation(fields: [accountId], references: [id])
+  type         TransactionType // Enum: deposit, withdrawal, transfer, refund
+  amount       Float
+  reference    String? // Optional reference for transfer or refund
+  originalTxId Int? // For refund transactions, reference to the original transaction
+  originalTx   Transaction?    @relation("OriginalTransaction", fields: [originalTxId], references: [id])
+  refundTx     Transaction[]   @relation("OriginalTransaction")
+  createdAt    DateTime        @default(now())
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  REFUND
+}

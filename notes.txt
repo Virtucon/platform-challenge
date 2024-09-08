@@ -1,0 +1,8 @@
+npx prisma init
+npx prisma migrate dev --name init
+npx prisma db push
+npx prisma generate
+
+// before running the server
+npx prisma db push
+Run App: npx ts-node -r tsconfig-paths/register src/server.ts 
